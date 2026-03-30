@@ -1,27 +1,252 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-<title>Fake News Detection</title>
-</head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veritas AI | Fake News Detection</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --success: #22c55e;
+            --danger: #ef4444;
+        }
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--bg-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-main);
+            padding: 20px;
+        }
+
+        /* Abstract background shapes for depth */
+        .bg-glow {
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+            top: -100px;
+            right: -100px;
+            z-index: -1;
+        }
+
+        .container {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            width: 100%;
+            max-width: 580px;
+            padding: 48px;
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            background: linear-gradient(to right, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: var(--text-dim);
+            font-size: 15px;
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-dim);
+            display: block;
+            margin-bottom: 8px;
+            margin-left: 4px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: white;
+            font-size: 15px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--primary);
+            background: rgba(0, 0, 0, 0.4);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+        }
+
+        textarea {
+            height: 140px;
+            line-height: 1.6;
+            resize: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            background: var(--primary);
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+            margin-top: 8px;
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 32px;
+            padding: 20px;
+            text-align: center;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .real {
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .fake {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .confidence-bar {
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .footer {
+            margin-top: 32px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-dim);
+            letter-spacing: 0.02em;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container { padding: 30px 20px; }
+        }
+    </style>
+</head>
 <body>
 
-<h1>Fake News Detection</h1>
+<div class="bg-glow"></div>
 
-<form action="/predict" method="post">
+<div class="container">
+    <div class="header">
+        <h1>Veritas AI</h1>
+        <p>Advanced Linguistic Truth Analysis</p>
+    </div>
 
-<textarea name="news" rows="10" cols="70"
-placeholder="Enter news text here"></textarea>
+    <form action="/predict" method="post">
+        <div class="input-group">
+            <label>Headline</label>
+            <input type="text" name="title" value="{{ title or '' }}" placeholder="Paste the news title here..." required>
+        </div>
 
-<br><br>
+        <div class="input-group">
+            <label>Article Body</label>
+            <textarea name="news" placeholder="Paste the full article content for deep analysis..." required>{{ news or '' }}</textarea>
+        </div>
 
-<button type="submit">Check News</button>
+        <button type="submit" id="analyzeBtn">Analyze Authenticity</button>
+    </form>
 
-</form>
+    {% if prediction %}
+    <div class="result {% if 'Fake' in prediction %}fake{% else %}real{% endif %}">
+        <span style="font-size: 12px; text-transform: uppercase; opacity: 0.8;">Analysis Result</span>
+        {{ prediction }}
+    </div>
+    {% endif %}
 
-<h2>{{ prediction }}</h2>
+    <div class="footer">
+        Powered by Neural Network Classification v4.2
+    </div>
+</div>
+
+<script>
+    // Subtle button click effect
+    const btn = document.getElementById('analyzeBtn');
+    btn.addEventListener('click', function() {
+        if(document.querySelector('textarea').value !== "") {
+            this.innerHTML = "Processing Neural Weights...";
+            this.style.opacity = "0.7";
+        }
+    });
+</script>
 
 </body>
-
 </html>
